@@ -207,13 +207,11 @@ private:
     
     AudioFileTypeID audioStreamTypeFromContentType(CFStringRef contentType);
     
-    static long m_alreadyPlayedBytes;
-    static std::list<long> m_bytesUntilMetadata;
-    static std::list<std::map<CFStringRef,CFStringRef>> m_metadataMapsToSend;
+    long m_alreadyPlayedBytes;
+    std::list<long> m_bytesUntilMetadata;
+    std::list<std::map<CFStringRef,CFStringRef>> m_metadataMapsToSend;
     
-    static Audio_Stream_Delegate *static_delegate;
-    
-    static void sendSavedMetaData();
+    void sendSavedMetaData();
 };
     
 class Audio_Stream_Delegate {

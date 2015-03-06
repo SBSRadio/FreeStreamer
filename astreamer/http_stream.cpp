@@ -34,7 +34,6 @@ CFStringRef HTTP_Stream::httpRangeHeader     = CFSTR("Range");
 CFStringRef HTTP_Stream::icyMetaDataHeader = CFSTR("Icy-MetaData");
 CFStringRef HTTP_Stream::icyMetaDataValue  = CFSTR("1"); /* always request ICY metadata, if available */
 
-long HTTP_Stream::m_totalBytes = 0;
     
 /* HTTP_Stream: public */
 HTTP_Stream::HTTP_Stream() :
@@ -59,6 +58,7 @@ HTTP_Stream::HTTP_Stream() :
     
     m_httpReadBuffer(0),
     m_icyReadBuffer(0),
+    m_totalBytes(0),
     
     m_id3Parser(new ID3_Parser())
 {
@@ -116,6 +116,7 @@ bool HTTP_Stream::open()
     Input_Stream_Position position;
     position.start = 0;
     position.end = 0;
+    m_totalBytes = 0;
     
     m_contentLength = 0;
 #ifdef INCLUDE_ID3TAG_SUPPORT
