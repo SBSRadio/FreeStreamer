@@ -115,6 +115,7 @@ public:
     void streamEndEncountered();
     void streamErrorOccurred(CFStringRef errorDesc);
     void streamMetaDataAvailable(std::map<CFStringRef,CFStringRef> metaData);
+    void streamMetaDataAvailable(std::map<CFStringRef,CFStringRef> metaData, long onByte);
 
 private:
     
@@ -205,6 +206,14 @@ private:
     static void streamDataCallback(void *inClientData, UInt32 inNumberBytes, UInt32 inNumberPackets, const void *inInputData, AudioStreamPacketDescription *inPacketDescriptions);
     
     AudioFileTypeID audioStreamTypeFromContentType(CFStringRef contentType);
+    
+    static long m_alreadyPlayedBytes;
+    static std::list<long> m_bytesUntilMetadata;
+    static std::list<std::map<CFStringRef,CFStringRef>> m_metadataMapsToSend;
+    
+    static Audio_Stream_Delegate *static_delegate;
+    
+    static void sendSavedMetaData();
 };
     
 class Audio_Stream_Delegate {

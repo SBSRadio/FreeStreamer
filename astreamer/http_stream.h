@@ -68,6 +68,8 @@ private:
     
     static void readCallBack(CFReadStreamRef stream, CFStreamEventType eventType, void *clientCallBackInfo);
     
+    static long m_totalBytes;
+    
 public:
     HTTP_Stream();
     virtual ~HTTP_Stream();

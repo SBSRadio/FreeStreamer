@@ -338,6 +338,12 @@ void Caching_Stream::streamHasBytesAvailable(UInt8 *data, UInt32 numBytes)
     }
 }
     
+void Caching_Stream::streamMetaDataAvailable(std::map<CFStringRef, CFStringRef> metaData, long onByte) {
+    if (m_delegate) {
+        m_delegate->streamMetaDataAvailable(metaData, onByte);
+    }
+}
+    
 void Caching_Stream::streamEndEncountered()
 {
     if (m_fileOutput) {

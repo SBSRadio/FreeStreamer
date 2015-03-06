@@ -34,6 +34,7 @@ CFStringRef HTTP_Stream::httpRangeHeader     = CFSTR("Range");
 CFStringRef HTTP_Stream::icyMetaDataHeader = CFSTR("Icy-MetaData");
 CFStringRef HTTP_Stream::icyMetaDataValue  = CFSTR("1"); /* always request ICY metadata, if available */
 
+long HTTP_Stream::m_totalBytes = 0;
     
 /* HTTP_Stream: public */
 HTTP_Stream::HTTP_Stream() :
@@ -474,6 +475,7 @@ void HTTP_Stream::parseICYStream(const UInt8 *buf, const CFIndex bufSize)
 {
     HS_TRACE("Parsing an IceCast stream, received %li bytes\n", bufSize);
     
+    
     CFIndex offset = 0;
     CFIndex bytesFound = 0;
     if (!m_icyHeadersRead) {
@@ -647,7 +649,7 @@ void HTTP_Stream::parseICYStream(const UInt8 *buf, const CFIndex bufSize)
                         metadataMap[CFSTR("IcecastStationName")] = CFStringCreateCopy(kCFAllocatorDefault, m_icyName);
                     }
                     
-                    m_delegate->streamMetaDataAvailable(metadataMap);
+                    m_delegate->streamMetaDataAvailable(metadataMap, m_totalBytes + offset);
                 }
                 m_icyMetaData.clear();
                 continue;
@@ -673,6 +675,7 @@ void HTTP_Stream::parseICYStream(const UInt8 *buf, const CFIndex bufSize)
     }
     
     if (m_delegate && i > 0) {
+        m_totalBytes += i;
         m_delegate->streamHasBytesAvailable(m_icyReadBuffer, i);
     }
 }

@@ -63,6 +63,7 @@ public:
     void streamEndEncountered();
     void streamErrorOccurred(CFStringRef errorDesc);
     void streamMetaDataAvailable(std::map<CFStringRef,CFStringRef> metaData);
+    void streamMetaDataAvailable(std::map<CFStringRef, CFStringRef> metaData, long onByte);
 };
     
     

@@ -60,25 +60,29 @@
     
     __weak FSPlaylistViewController *weakSelf = self;
     
-    _request = [[FSParseRssPodcastFeedRequest alloc] init];
-    _request.url = [NSURL URLWithString:@"https://raw.github.com/muhku/FreeStreamer/master/Extra/example-rss-feed.xml"];
-    _request.onCompletion = ^() {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        
-        weakSelf.playlistItems = [[NSMutableArray alloc] initWithArray:weakSelf.request.playlistItems];
-        
-        [weakSelf addUserPlaylistItems];
-        
-        [weakSelf.tableView reloadData];
-    };
-    _request.onFailure = ^() {
-        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
-        
-        [AJNotificationView showNoticeInView:[[[UIApplication sharedApplication] delegate] window]
-                                        type:AJNotificationTypeRed
-                                       title:@"Failed to load playlists."
-                                   hideAfter:10];
-    };
+//    _request = [[FSParseRssPodcastFeedRequest alloc] init];
+//    _request.url = [NSURL URLWithString:@"https://raw.github.com/muhku/FreeStreamer/master/Extra/example-rss-feed.xml"];
+//    _request.onCompletion = ^() {
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//        
+//        weakSelf.playlistItems = [[NSMutableArray alloc] initWithArray:weakSelf.request.playlistItems];
+//        
+//        [weakSelf addUserPlaylistItems];
+//        
+//        [weakSelf.tableView reloadData];
+//    };
+//    _request.onFailure = ^() {
+//        [UIApplication sharedApplication].networkActivityIndicatorVisible = NO;
+//        
+//        [AJNotificationView showNoticeInView:[[[UIApplication sharedApplication] delegate] window]
+//                                        type:AJNotificationTypeRed
+//                                       title:@"Failed to load playlists."
+//                                   hideAfter:10];
+//    };
+    FSPlaylistItem *item = [[FSPlaylistItem alloc] init];
+    item.title = @"RadioPlay new stream";
+    item.url = [NSURL URLWithString:@"http://194.16.21.232/102_se_aacp?awparams=companionsAds:true"];
+    self.playlistItems = [[NSMutableArray alloc] initWithObjects:item, nil];
 }
 
 - (void)viewWillAppear:(BOOL)animated

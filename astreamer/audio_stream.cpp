@@ -53,6 +53,11 @@ static CFStringRef coreAudioErrorToCFString(CFStringRef basicErrorDescription, O
                                                           str);
     return formattedError;
 }
+    
+std::list<long> Audio_Stream::m_bytesUntilMetadata = std::list<long>();
+long Audio_Stream::m_alreadyPlayedBytes = 0;
+Audio_Stream_Delegate *Audio_Stream::static_delegate = nullptr;
+std::list<std::map<CFStringRef,CFStringRef>> Audio_Stream::m_metadataMapsToSend = std::list<std::map<CFStringRef, CFStringRef>>();
 	
 /* Create HTTP stream as Audio_Stream (this) as the delegate */
 Audio_Stream::Audio_Stream() :
@@ -1011,12 +1016,28 @@ void Audio_Stream::streamErrorOccurred(CFStringRef errorDesc)
     
 void Audio_Stream::streamMetaDataAvailable(std::map<CFStringRef,CFStringRef> metaData)
 {
-    if (m_delegate) {
-        m_delegate->audioStreamMetaDataAvailable(metaData);
+    //    printf("hejehe");
+}
+
+void Audio_Stream::streamMetaDataAvailable(std::map<CFStringRef,CFStringRef> metaData, long onByte)
+{
+    long value = onByte - m_alreadyPlayedBytes;
+    m_bytesUntilMetadata.push_back(value);
+    printf("Got metadata number %lu. Bytes until send %li. \n", m_bytesUntilMetadata.size(), value);
+    m_metadataMapsToSend.push_back(metaData);
+    static_delegate = m_delegate;
+}
+
+/* private */
+    
+    
+void Audio_Stream::sendSavedMetaData() {
+    if (static_delegate) {
+        static_delegate->audioStreamMetaDataAvailable(m_metadataMapsToSend.front());
+        printf("Sending metadata. Size %lu\n", m_metadataMapsToSend.size());
+        m_metadataMapsToSend.pop_front();
     }
 }
-    
-/* private */
     
 CFStringRef Audio_Stream::createHashForString(CFStringRef str)
 {
@@ -1393,6 +1414,19 @@ void Audio_Stream::cleanupCachedData()
         queued_packet_t *tmp = cur->next;
         
         m_cachedDataSize -= cur->desc.mDataByteSize;
+        m_alreadyPlayedBytes += cur->desc.mDataByteSize;
+        
+        if (!m_bytesUntilMetadata.empty()) {
+            long value = m_bytesUntilMetadata.front();
+            m_bytesUntilMetadata.pop_front();
+            
+            value -= cur->desc.mDataByteSize;
+            if (value <= 0) {
+                Audio_Stream::sendSavedMetaData();
+            } else {
+                m_bytesUntilMetadata.push_front(value);
+            }
+        }
         
         free(cur);
         cur = tmp;
