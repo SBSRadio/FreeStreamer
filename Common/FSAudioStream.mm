@@ -283,7 +283,7 @@ public:
         
         _delegate = nil;
         
-        _maxRetryCount = 3;
+        _maxRetryCount = 0;
         
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(reachabilityChanged:)
