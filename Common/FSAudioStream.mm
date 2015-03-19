@@ -837,7 +837,11 @@ public:
         return;
     }
     
-    if (self.retryCount >= self.maxRetryCount) {
+    NSUInteger maxRetryCount = 3;
+    if (self.durationInSeconds > 0) {
+        maxRetryCount = 0;
+    }
+    if (self.retryCount >= maxRetryCount) {
 #if defined(DEBUG) || (TARGET_IPHONE_SIMULATOR)
         NSLog(@"FSAudioStream: Retry count %lu. Giving up.", (unsigned long)self.retryCount);
 #endif
